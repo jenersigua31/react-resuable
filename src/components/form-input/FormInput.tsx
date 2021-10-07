@@ -10,7 +10,7 @@ interface Props {
     value: string,
     placeholder?: string,
     layout?: 'horizontal' | 'vertical',
-    onChange?: (value: string) => void
+    onChange?: (value: string) => void,
 }
 
 const FormInput : React.FC<Props>  = ({
@@ -20,7 +20,9 @@ const FormInput : React.FC<Props>  = ({
     value,
     placeholder,
     layout = 'horizontal',
+
     onChange
+
 }) =>  {
     // VARIABLES
     const [B, E] = useBEM('form-input');
@@ -31,8 +33,7 @@ const FormInput : React.FC<Props>  = ({
     }
 
     return (
-        <div className={B(layout)}>
-            
+        <div className={B(layout)}>            
             {
                 label && 
                 <label htmlFor={id} className={E('label')}>

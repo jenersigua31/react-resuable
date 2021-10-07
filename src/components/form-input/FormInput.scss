@@ -1,21 +1,29 @@
+:root {
+    --form-input-label-color    :#333;
+    --form-input-border-color   :#333;
+    --form-input-background     :#fff;
+}
+
 .form-input {
     display: flex;
     align-items: center;
     justify-content: center;
 
-
     margin: 1em 0;
 
     &__label {
         margin-right: .5em;
+        color: var(--form-input-label-color);
     }
 
     &__control {
-        border: 1px solid #333;
+        border: 1px solid var(--form-input-border-color);
         padding: .35em .5em;
         flex: 1;
         min-width: 15rem;
         box-sizing: border-box;
+        outline: none;
+        background-color: var(--form-input-background);
 
         &--no-label {
             width: 100%;

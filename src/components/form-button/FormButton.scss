@@ -1,0 +1,15 @@
+:root {
+    --form-button-color         :#333;
+    --form-button-border-color  :#333;
+    --form-button-background    :#eee;
+}
+
+.form-button {
+    padding: .35em .5em;
+    width: 100%;
+    cursor: pointer;
+
+    color: var(--form-button-color);
+    border: 1px solid var(--form-button-border-color);
+    background-color: var(--form-button-background);
+}
