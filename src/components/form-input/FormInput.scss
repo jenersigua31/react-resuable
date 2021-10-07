@@ -1,0 +1,33 @@
+.form-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+
+    margin: 1em 0;
+
+    &__label {
+        margin-right: .5em;
+    }
+
+    &__control {
+        border: 1px solid #333;
+        padding: .35em .5em;
+        flex: 1;
+        min-width: 15rem;
+        box-sizing: border-box;
+
+        &--no-label {
+            width: 100%;
+        }
+    }
+
+    &--vertical {
+        flex-flow: column;
+
+        > * {
+            width: 100%;
+            margin: 0;
+        }
+    }
+}
