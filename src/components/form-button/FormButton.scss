@@ -1,7 +1,13 @@
 :root {
-    --form-button-color         :#333;
-    --form-button-border-color  :#333;
-    --form-button-background    :#eee;
+    --form-button-theme              :var(--theme, hsl(0, 0%, 20%));
+    --form-button-text-color         :hsl(0, 0%, 100%);
+    --form-button-invalid-text-color :hsla(0, 79%, 45%, 0.863);
+    --form-button-background         :hsl(0, 0%, 93%);
+
+    --form-button-disabled-color         :hsl(0, 0%, 20%, .3);
+    --form-button-disabled-border-color  :hsl(0, 0%, 20%, .3);
+    --form-button-disabled-background    :hsl(0, 0%, 93%, .3);
+
 }
 
 .form-button {
@@ -9,7 +15,16 @@
     width: 100%;
     cursor: pointer;
 
-    color: var(--form-button-color);
-    border: 1px solid var(--form-button-border-color);
-    background-color: var(--form-button-background);
+    color: var(--form-button-text-color);
+    border: 1px solid var(--form-button-theme);
+    background-color: var(--form-button-theme);
+
+    outline: none;
+    transition: all .25s ease-in-out;
+
+    &--disabled {
+        color: var(--form-button-disabled-color);
+        border: 1px solid var(--form-button-disabled-border-color);
+        background-color: var(--form-button-disabled-background);    
+    }
 }

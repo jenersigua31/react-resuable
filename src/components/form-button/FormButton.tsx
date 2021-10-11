@@ -4,11 +4,13 @@ import "./FormButton.scss"
 
 interface Props {
     text: string,
+    disabled?: boolean
     onClick?: () => void
 }
 
 const FormButton : React.FC<Props>  = ({
     text,
+    disabled = false,
     onClick
 }) =>  {
     // VARIABLES
@@ -22,8 +24,14 @@ const FormButton : React.FC<Props>  = ({
         if(onClick)onClick();
     }
 
+    const classModifiers = () => {
+        return [
+            ...(disabled ? ['disabled'] : []),
+        ]
+    }
+
     return (
-        <button className={B()} onClick={onClickHandler}>
+        <button disabled={disabled} className={B(classModifiers())} onClick={onClickHandler}>
             {text}
         </button>
     )

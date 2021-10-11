@@ -1,29 +1,32 @@
 :root {
-    --form-input-label-color    :#333;
-    --form-input-border-color   :#333;
-    --form-input-background     :#fff;
+    --form-input-theme              : var(--theme, hsl(0, 0%, 20%));
+    --form-input-text-color         : var(--text-color, hsl(0, 0%, 20%));
+    --form-input-invalid-text-color :hsla(0, 79%, 45%, 0.863);
+    --form-input-background         :#fff;
 }
 
 .form-input {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    margin: 1em 0;
+    position: relative;
+    margin: 1.75em 0;
+    color: var(--form-input-text-color);
 
     &__label {
         margin-right: .5em;
-        color: var(--form-input-label-color);
+        display: inline-block;
     }
 
     &__control {
-        border: 1px solid var(--form-input-border-color);
+        border: 1px solid var(--form-input-theme);
         padding: .35em .5em;
         flex: 1;
         min-width: 15rem;
         box-sizing: border-box;
         outline: none;
         background-color: var(--form-input-background);
+        transition: all .25s ease-in-out;
 
         &--no-label {
             width: 100%;
@@ -36,6 +39,41 @@
         > * {
             width: 100%;
             margin: 0;
+        }
+
+        .form-input {
+            &__text {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            &__error-message {
+                margin-left: auto;
+            }
+        }
+    }
+
+    &--horizontal {
+
+        .form-input__error-message {
+            position: absolute;
+            top: 0px;
+            right: 0;
+            transform: translateY(-100%);    
+            background: #fff;
+            border-radius: .30em;
+        }
+    }
+
+    &--invalid {
+        .form-input {
+            &__error-message {
+                color:var(--form-input-invalid-text-color);
+            }
+            &__control {
+                border-color:var(--form-input-invalid-text-color);
+            }
         }
     }
 }
