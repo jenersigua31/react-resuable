@@ -5,95 +5,11 @@ type ValidationRuleType = {
     validate: (value?: string) => boolean
 }
 
-type ReactiveFormValidatorType = {
-    validate: (value: string, rules: ValidationRuleType[]) => {errors: string[], valid: boolean},
-
-    // RULES
-    required: (message?: string) => ValidationRuleType,
-    email: (message?: string) => ValidationRuleType,
-    minValue: (condition: number, message?: string) => ValidationRuleType,
-    maxValue: (condition: number, message?: string) => ValidationRuleType,
-    minCharacter: (condition: number, message?: string) => ValidationRuleType,
-    maxCharacter: (condition: number, message?: string) => ValidationRuleType,
-    pattern: (condition: any, message?: string) => ValidationRuleType,
-}
-
-const ReactiveFormValidator = ((): ReactiveFormValidatorType => {
-
-    const required = (message?: string) => ({
-        message: message || 'Required',
-        validate: (value?: string) => !value ? false : true
-    });
-
-    const email = (message?: string) => ({
-        message: message || 'Invalid Email',
-        validate: (value?: string) => {
-            const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return !value ? true : re.test(value)
-        }
-    });
-
-    const minValue = (condition: number, message?: string) => ({
-        message: message || `Minimum Value (${condition})`,
-        condition,
-        validate: (value?: string) => !value ? true : parseInt(value) >= condition
-    });
-
-    const maxValue = (condition: number, message?: string) => ({
-        message: message || `Maximum Value (${condition})`,
-        condition,
-        validate: (value?: string) => !value ? true : parseInt(value) <= condition
-    });
-    
-    const minCharacter = (condition: number, message?: string) => ({
-        message: message || `Minimum Character (${condition})`,
-        condition,
-        validate: (value?: string) => !value ? true : value.length >= condition
-    });
-
-    const maxCharacter = (condition: number, message?: string) => ({
-        message: message || `Maximum Character (${condition})`,
-        condition,
-        validate: (value?: string) => !value ? true : value.length <= condition
-    });
-
-    const pattern = (condition: any, message?: string) => ({
-        message: message || `Invalid Pattern`,
-        condition,
-        validate: (value?: string) => !value ? true : condition.test(value)
-    });
-
-    const validate = (value: string, rules: ValidationRuleType[]) => {
-        const errors: string[] = [];
-
-        rules.forEach( v => {
-            const invalid = !v.validate(value);
-            if(invalid) {
-                errors.push(v.message || '')
-            }
-        });
-
-        return {
-            valid: errors.length < 1,
-            errors
-        }
-    }
-
-    return {
-        required,
-        email,
-        minValue,
-        maxValue,
-        minCharacter,
-        maxCharacter,
-        pattern,
-        validate
-    }
-})()
-
 type FormSchemaType = {
     [key: string]: {
         value: string,        
+        dirty?:boolean,
+        default?: string,
         label?: string,
         validations?: ValidationRuleType[]
     }
@@ -112,27 +28,30 @@ type FormData = {
 type hookType = {
     setValue: (key: string, value: string) => void,
     form: FormData,
-    addValidation: (to: string, validation: ValidationRuleType[]) => void
+    addValidation: (to: string, validation: ValidationRuleType[]) => void,
+    reset: () => void,
+    clear: () => void
+}
+
+
+type ValidationResult = {
+    valid: boolean, 
+    errors: string[]
+}
+
+type ValidationRequirement = {
+    message?: string,
+    validate: (value?: string) => boolean
 }
 
 const useReactiveForm  = (
     schema: FormSchemaType,
-    validator: ReactiveFormValidatorType
+    validator: (value: string, requirements: ValidationRequirement[]) => ValidationResult,
 ): hookType =>  {
 
         const [state, setState] = useState<FormSchemaType>(schema);
 
-        const setValue = (key: string, value: string) => {
-            setState( (prevState) => {
-                return {
-                    ...prevState,
-                    [key]: {
-                        ...prevState[key],
-                        value: value
-                    }
-                }
-            });
-        }
+        
 
         const getFormData = () => {
             const fields = Object.entries(state);
@@ -145,7 +64,12 @@ const useReactiveForm  = (
                 const [key, field] = f;
                 const value = state[key].value;
 
-                const {errors, valid} = validator.validate(value, field?.validations || [])
+                const {errors, valid} = state[key].dirty ? 
+                    validator(value, field?.validations || []) :
+                    {
+                        errors:[],
+                        valid: true
+                    }
 
                 if(!valid)isFormValid = false;
 
@@ -185,14 +109,42 @@ const useReactiveForm  = (
             });
         }
 
+        const reset = () => {
+            Object.entries(state).forEach( ([key, values]) => {                
+                updateValue(key, values.default || '')       
+            });
+        }
+
+        const clear = () => {
+            Object.entries(state).forEach( ([key, values]) => {                
+                updateValue(key, '')       
+            });
+        }
+
+        const updateValue = (key: string, value: string, dirty: boolean = false) => {
+            setState( (prevState) => {
+                return {
+                    ...prevState,
+                    [key]: {
+                        ...prevState[key],
+                        value: value,
+                        dirty
+                    }
+                }
+            }); 
+        }
+
+        const setValue = (key: string, value: string) => {
+            updateValue(key, value, true)       
+        }
+
         return {
             setValue,
             form: getFormData(),
-            addValidation
+            addValidation,
+            reset,
+            clear
         }
 }
 
 export default useReactiveForm;
-export {
-    ReactiveFormValidator
-};
